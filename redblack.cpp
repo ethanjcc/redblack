@@ -6,10 +6,11 @@ using namespace std;
 
 Node::Node(int value) {
   data = value;
+  node = nullptr;
   left = nullptr;
   right = nullptr;
   parent = nullptr;
-  Color = red;
+  color = red;
 }
 
 //constructor
@@ -34,13 +35,45 @@ Node* redblack::insert(Node* root, int value) {
   }
   if (value < root->data) {
     root->left = insert(root->left, value);
-    root->left->parent = root;
+red
+  root->left->parent = root;
   }
   else if (value > root->data) {
     root->right = insert(root->right, value);
     root->right->parent = root;
   }
   return root;
+}
+
+//fixes the tree after inserting
+//help from copilot
+void fixInsert(Node* node) {
+  //only if the parent is red
+  while (node->parent != nullptr && node->parent->color == red) {
+    Node* grandparent = node->parent->parent;
+    Node* uncle = nullptr;
+    //case for if the uncle is on the right
+    if (node->parent == grandparent->right) {
+      uncle = grandparent->right;
+      //case if uncle on right is red
+      if (uncle != nullptr && uncle->color == red) {
+	node->parent->color = black;
+	uncle->color = black;
+	grandparent->color = red;
+	node = grandparent;
+      }
+    }
+    else {
+      uncle = grandparent->left;
+      if (node == node->parent->right){
+	node = node->parent;
+	rotateLeft(node);
+      }
+      node->parent->color = black;
+      grandparent->color = red;
+      rotateRight(grandparent);
+    }
+  }
 }
 
 //update function
