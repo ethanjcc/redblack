@@ -35,8 +35,7 @@ Node* redblack::insert(Node* root, int value) {
   }
   if (value < root->data) {
     root->left = insert(root->left, value);
-red
-  root->left->parent = root;
+    root->left->parent = root;
   }
   else if (value > root->data) {
     root->right = insert(root->right, value);
@@ -47,31 +46,53 @@ red
 
 //fixes the tree after inserting
 //help from copilot
-void fixInsert(Node* node) {
+void redblack::fixInsert(Node* node) {
   //only if the parent is red
   while (node->parent != nullptr && node->parent->color == red) {
     Node* grandparent = node->parent->parent;
     Node* uncle = nullptr;
     //case for if the uncle is on the right
     if (node->parent == grandparent->right) {
-      uncle = grandparent->right;
-      //case if uncle on right is red
+      Node* uncle = grandparent->left;
+      //case 1
       if (uncle != nullptr && uncle->color == red) {
 	node->parent->color = black;
 	uncle->color = black;
 	grandparent->color = red;
 	node = grandparent;
       }
-    }
-    else {
-      uncle = grandparent->left;
-      if (node == node->parent->right){
-	node = node->parent;
-	rotateLeft(node);
+      else {
+	//case 2
+	if (node == node->parent->left) {
+	  node = node->parent;
+	  rotateRight(node);
+	}
+	//case 3
+	node->parent->color = black;
+	grandparent->color = red;
+	rotateLeft(grandparent);
       }
-      node->parent->color = black;
-      grandparent->color = red;
-      rotateRight(grandparent);
+    //uncle is on left
+    else {
+      Node* uncle = grandparent->right;
+      //case 1
+      if (uncle != nullptr && uncle->color == red){
+        node->parent->color = black;
+	uncle->color = black;
+	grandparent->color = red;
+	node = grandparent;
+      }
+      else {
+	//case 2
+	if (node == node->parent->right) {
+	  node = node->parent;
+	  rotateLeft(node);
+	}
+	//case 3
+	node->parent->color = black;
+	grandparent->color = red;
+	rotateRight(grandparent);
+      }
     }
   }
 }
