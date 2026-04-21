@@ -1,12 +1,15 @@
+//enum from copilot because it said red black and color were not defined
+enum Color { red, black };
+
 struct Node {
   int data;
   Node* left;
   Node* right;
   Node(int value);
   Node* parent;
-  color red;
-  color black;
+  Color color;
   Node* node;
+  Node* nextC;
 };
 
 class redblack {
@@ -17,10 +20,13 @@ class redblack {
   void remove(int value);
   bool search(int value) const;
   void tree() const;
+  
  private:
   Node* root;
   Node* insert(Node* root, int value);
   void fixInsert(Node* node);
+  void rotateLeft(Node* node);
+  void rotateRight(Node* node);
   Node* remove(Node* root, int value);
   bool search(Node* root, int value) const;
   void tree(Node* root, int depth) const;

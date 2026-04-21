@@ -62,18 +62,18 @@ void redblack::fixInsert(Node* node) {
 	node = grandparent;
       }
       else {
-	//case 2
-	if (node == node->parent->left) {
+        //case 2
+        if (node == node->parent->left) {
 	  node = node->parent;
 	  rotateRight(node);
-	}
-	//case 3
-	node->parent->color = black;
-	grandparent->color = red;
-	rotateLeft(grandparent);
+        }
+        //case 3
+        node->parent->color = black;
+        grandparent->color = red;
+        rotateLeft(grandparent);
       }
     //uncle is on left
-    else {
+    } else {
       Node* uncle = grandparent->right;
       //case 1
       if (uncle != nullptr && uncle->color == red){
@@ -95,6 +95,55 @@ void redblack::fixInsert(Node* node) {
       }
     }
   }
+  root->color = black;
+}
+
+void redblack::rotateLeft(Node* nextC) {
+  //nextP is the child of nextC and will become the new parent after rotating
+  Node* nextP = nextC->right;
+  nextC->right = nextP->left;
+  //if nothing on the left then the new parents left parent is the new child
+  if (nextP->left != nullptr) {
+    nextP->left->parent = nextC;
+  }
+  //link them
+  nextP->parent = nextC->parent;
+  //if the new child does not have a parent then the new parent is the root
+  if (nextC->parent == nullptr) {
+    root = nextP;
+  }
+  //if the new child's parent is on the left then that parent is the new parent
+  else if (nextC == nextC->parent->left) {
+    nextC->parent->left = nextP;
+  }
+  //if the new child's parent is on the right then that parent is the new parent
+  else {
+    nextC->parent->right = nextP;
+  }
+  //rotate them
+  nextP->left = nextC;
+  nextC->parent = nextP;
+}
+
+//same thing as above but right instead of left
+void redblack::rotateRight(Node* nextC) {
+  Node* nextP = nextC->left;
+  nextC->left = nextP->right;
+  if (nextP->right != nullptr) {
+    nextP->right->parent = nextC;
+  }
+  nextP->parent = nextC->parent;
+  if (nextC->parent == nullptr) {
+    root = nextP;
+  }
+  else if (nextC == nextC->parent->right) {
+    nextC->parent->right = nextP;
+  }
+  else {
+    nextC->parent->left = nextP;
+  }
+  nextP->right = nextC;
+  nextC->parent = nextP;
 }
 
 //update function
