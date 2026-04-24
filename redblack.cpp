@@ -24,21 +24,25 @@ redblack::~redblack() {
 }
 
 //update root
+//help from copilot to update the inserted value from fixInsert
 void redblack::insert(int value) {
-  root = insert(root, value);
+  Node* inserted = nullptr;
+  root = insert(root, value, inserted);
+  fixInsert(inserted);
 }
 
 //code for inserting a number into the tree
-Node* redblack::insert(Node* root, int value) {
+Node* redblack::insert(Node* root, int value, Node*& inserted) {
   if (root == nullptr) {
-    return new Node(value);
+    inserted = new Node(value);
+    return inserted;
   }
   if (value < root->data) {
-    root->left = insert(root->left, value);
+    root->left = insert(root->left, value, inserted);
     root->left->parent = root;
   }
   else if (value > root->data) {
-    root->right = insert(root->right, value);
+    root->right = insert(root->right, value, inserted);
     root->right->parent = root;
   }
   return root;
@@ -56,6 +60,7 @@ void redblack::fixInsert(Node* node) {
       Node* uncle = grandparent->left;
       //case 1
       if (uncle != nullptr && uncle->color == red) {
+	cout << "case 1" << endl;
 	node->parent->color = black;
 	uncle->color = black;
 	grandparent->color = red;
@@ -63,11 +68,13 @@ void redblack::fixInsert(Node* node) {
       }
       else {
         //case 2
-        if (node == node->parent->left) {
+	if (node == node->parent->left) {
+	  cout << "case 2" << endl;
 	  node = node->parent;
 	  rotateRight(node);
         }
         //case 3
+	cout << "case 3" << endl;
         node->parent->color = black;
         grandparent->color = red;
         rotateLeft(grandparent);
@@ -77,7 +84,8 @@ void redblack::fixInsert(Node* node) {
       Node* uncle = grandparent->right;
       //case 1
       if (uncle != nullptr && uncle->color == red){
-        node->parent->color = black;
+	cout << "case 1" << endl;
+	node->parent->color = black;
 	uncle->color = black;
 	grandparent->color = red;
 	node = grandparent;
@@ -85,10 +93,12 @@ void redblack::fixInsert(Node* node) {
       else {
 	//case 2
 	if (node == node->parent->right) {
+	  cout << "case 2" << endl;
 	  node = node->parent;
 	  rotateLeft(node);
 	}
 	//case 3
+	cout << "case 3" << endl;
 	node->parent->color = black;
 	grandparent->color = red;
 	rotateRight(grandparent);
@@ -234,6 +244,12 @@ void redblack::tree(Node* root, int depth) const {
   for (int i = 0; i < depth; i++){
     cout << "\t";
   }
-  cout << root->data << endl;
+  cout << root->data << " ";
+  if (root->color == red) {
+    cout << "r" << endl;
+  }
+  else {
+    cout << "b" << endl;
+  }
   tree(root->left, depth + 1);
 }

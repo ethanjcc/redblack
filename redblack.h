@@ -23,7 +23,7 @@ class redblack {
   
  private:
   Node* root;
-  Node* insert(Node* root, int value);
+  Node* insert(Node* root, int value, Node*& inserted);
   void fixInsert(Node* node);
   void rotateLeft(Node* node);
   void rotateRight(Node* node);
