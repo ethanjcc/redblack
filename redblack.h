@@ -10,6 +10,8 @@ struct Node {
   Color color;
   Node* node;
   Node* nextC;
+  Node* db;
+  Node* sibling;
 };
 
 class redblack {
@@ -28,6 +30,7 @@ class redblack {
   void rotateLeft(Node* node);
   void rotateRight(Node* node);
   Node* remove(Node* root, int value);
+  void fixRemove(Node* node);
   bool search(Node* root, int value) const;
   void tree(Node* root, int depth) const;
 };

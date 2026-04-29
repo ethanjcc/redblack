@@ -11,6 +11,8 @@ Node::Node(int value) {
   right = nullptr;
   parent = nullptr;
   color = red;
+  db = nullptr;
+  sibling = nullptr;
 }
 
 //constructor
@@ -227,6 +229,21 @@ Node* redblack::remove(Node* root, int value) {
   }
   return root;
 }
+
+void redblack::fixRemove(Node* &root, Node* node) {
+  //when its a double black
+  while(node != root && node->color == black) {
+    //if its on the left of the parent its sibling is on the right
+    if (node == node->parent->left) {
+      node* sibling = node->parent->right;
+    }
+    //if its on the right of the parent its sibling is on the left
+    else {
+      node* sibling = node->parent->left;
+    }
+  }
+  node->color = black;
+} 
 
 //public tree print
 void redblack::tree() const {
