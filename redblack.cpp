@@ -235,11 +235,25 @@ void redblack::fixRemove(Node* &root, Node* node) {
   while(node != root && node->color == black) {
     //if its on the left of the parent its sibling is on the right
     if (node == node->parent->left) {
+      //left side case 1
       node* sibling = node->parent->right;
+      if (sibling->color == red) {
+	sibling->color = black;
+	node->parent->color = red;
+	rotateLeft(root, node->parent);
+	sibling = node->parent->right;
+      }
     }
     //if its on the right of the parent its sibling is on the left
     else {
+      //right side case 1
       node* sibling = node->parent->left;
+      if (sibling->color == red) {
+	sibling->color = black;
+	node->parent->color = red;
+	rotateRight(root, node->parent);
+	sibling = node->parent->left;
+      }
     }
   }
   node->color = black;
