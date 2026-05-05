@@ -29,8 +29,8 @@ class redblack {
   void fixInsert(Node* node);
   void rotateLeft(Node* node);
   void rotateRight(Node* node);
-  Node* remove(Node* root, int value);
-  void fixRemove(Node* node);
+  Node* remove(Node* node, Node* root, int value);
+  void fixRemove(Node* &root, Node* node);
   bool search(Node* root, int value) const;
   void tree(Node* root, int depth) const;
 };

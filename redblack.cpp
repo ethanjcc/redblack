@@ -189,7 +189,7 @@ void redblack::remove(int value) {
 
 //code for removing a number in the tree
 //help from copilot used
-Node* redblack::remove(Node* root, int value) {
+Node* redblack::remove(Node* node, Node* root, int value) {
   //no number found
   if (root == nullptr) {
     return nullptr;
@@ -203,19 +203,40 @@ Node* redblack::remove(Node* root, int value) {
   else {
     //no child
     if (root->left == nullptr && root->right == nullptr) {
+      bool wasblack = (root->color == black);
       delete root;
-      return nullptr;
+      Node* node = nullptr;
+      if (wasblack) {
+	fixDelete(this->root, node);
+      }
+      return node;
     }
     //one child on the right
     if (root->left == nullptr) {
       Node* temp = root->right;
+      bool parentblack = (root->color == black);
+      bool childblack = (child->color == black);
       delete root;
+      if (parentblack && childblack) {
+	fixDelete(this->root, temp);
+      }
+      if (child != nullptr) {
+	temp->color = black;
+      }
       return temp;
     }
     //one child on the left
     if (root->right == nullptr) {
       Node* temp = root->left;
+      bool parentblack = (root->color == black);
+      bool childblack = (child->color == black);
       delete root;
+      if (parentblack && childblack) {
+	fixDelete(this->root, temp);
+      }
+      if (child != nullptr) {
+	child->color = black;
+      }
       return temp;
     }
     //two children. Has to find a node to inherit its spot
@@ -235,8 +256,8 @@ void redblack::fixRemove(Node* &root, Node* node) {
   while(node != root && node->color == black) {
     //if its on the left of the parent its sibling is on the right
     if (node == node->parent->left) {
-      //left side case 1
-      node* sibling = node->parent->right;
+      //left side case 1, sibling is red
+      Node* sibling = node->parent->right;
       if (sibling->color == red) {
 	sibling->color = black;
 	node->parent->color = red;
@@ -246,8 +267,8 @@ void redblack::fixRemove(Node* &root, Node* node) {
     }
     //if its on the right of the parent its sibling is on the left
     else {
-      //right side case 1
-      node* sibling = node->parent->left;
+      //right side case 1, sibling is red
+      Node* sibling = node->parent->left;
       if (sibling->color == red) {
 	sibling->color = black;
 	node->parent->color = red;
@@ -255,6 +276,9 @@ void redblack::fixRemove(Node* &root, Node* node) {
 	sibling = node->parent->left;
       }
     }
+    //case 2, sibing is black and both of its children are black
+    //case 3, sibling is black, near child is red, far child is black
+    //case 4, sibling is black, far child is red
   }
   node->color = black;
 } 
