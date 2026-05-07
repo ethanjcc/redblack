@@ -19,7 +19,7 @@ class redblack {
   redblack();
   ~redblack();
   void insert(int value);
-  void remove(int value);
+  void removeRoot(int value);
   bool search(int value) const;
   void tree() const;
   

@@ -183,8 +183,8 @@ bool redblack::search(Node* root, int value) const {
 }
 
 //update root
-void redblack::remove(int value) {
-  root = remove(root, value);
+void redblack::removeRoot(Node* node, Node* root, int value) {
+  root = remove(node, root, value);
 }
 
 //code for removing a number in the tree
@@ -195,10 +195,10 @@ Node* redblack::remove(Node* node, Node* root, int value) {
     return nullptr;
   }
   if (value < root->data) {
-    root->left = remove(root->left, value);
+    root->left = remove(node, root->left, value);
   }
   else if (value > root->data) {
-    root->right = remove(root->right, value);
+    root->right = remove(node, root->right, value);
   }
   else {
     //no child
@@ -207,18 +207,22 @@ Node* redblack::remove(Node* node, Node* root, int value) {
       delete root;
       Node* node = nullptr;
       if (wasblack) {
-	fixDelete(this->root, node);
+	fixRemove(this->root, node);
       }
       return node;
     }
     //one child on the right
     if (root->left == nullptr) {
+      Node child = node->left;
+      if (child == nullptr) {
+	child = node->right;
+      }
       Node* temp = root->right;
       bool parentblack = (root->color == black);
       bool childblack = (child->color == black);
       delete root;
       if (parentblack && childblack) {
-	fixDelete(this->root, temp);
+	fixRemove(this->root, temp);
       }
       if (child != nullptr) {
 	temp->color = black;
@@ -227,12 +231,16 @@ Node* redblack::remove(Node* node, Node* root, int value) {
     }
     //one child on the left
     if (root->right == nullptr) {
+      Node child = node->right;
+      if (child == nullptr) {
+	child = node->left;
+      }
       Node* temp = root->left;
       bool parentblack = (root->color == black);
       bool childblack = (child->color == black);
       delete root;
       if (parentblack && childblack) {
-	fixDelete(this->root, temp);
+	fixRemove(this->root, temp);
       }
       if (child != nullptr) {
 	child->color = black;
@@ -246,7 +254,7 @@ Node* redblack::remove(Node* node, Node* root, int value) {
     }
     root->data = inherit->data;
     //delete the node
-    root->right = remove(root->right, inherit->data);
+    root->right = remove(node, root->right, inherit->data);
   }
   return root;
 }
@@ -277,6 +285,12 @@ void redblack::fixRemove(Node* &root, Node* node) {
       }
     }
     //case 2, sibing is black and both of its children are black
+    if (sibling->color == black && (sibling->right == nullptr || sibling->right->color == black) (sibling->left == nullptr || sibling->left->color == black)) {
+      sibling->color = red;
+      node = parent;
+      parent = node->parent;
+      continue;
+    }
     //case 3, sibling is black, near child is red, far child is black
     //case 4, sibling is black, far child is red
   }
