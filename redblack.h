@@ -2,6 +2,7 @@
 enum Color { red, black };
 
 struct Node {
+ public:
   int data;
   Node* left;
   Node* right;
@@ -19,7 +20,7 @@ class redblack {
   redblack();
   ~redblack();
   void insert(int value);
-  void removeRoot(int value);
+  void removeRoot(Node* node, Node* root, int value);
   bool search(int value) const;
   void tree() const;
   

@@ -24,7 +24,7 @@ int main(){
       int value;
       cout << "remove number: " << endl;
       cin >> value;
-      tree.remove(value);
+      tree.removeRoot(nullptr, nullptr, value);
     }
     //find a number in tree
     else if (strcmp(input, "search") == 0) {

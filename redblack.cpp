@@ -184,7 +184,7 @@ bool redblack::search(Node* root, int value) const {
 
 //update root
 void redblack::removeRoot(Node* node, Node* root, int value) {
-  root = remove(node, root, value);
+  root = remove(this->root, this->root, value);
 }
 
 //code for removing a number in the tree
@@ -213,7 +213,7 @@ Node* redblack::remove(Node* node, Node* root, int value) {
     }
     //one child on the right
     if (root->left == nullptr) {
-      Node child = node->left;
+      Node* child = node->left;
       if (child == nullptr) {
 	child = node->right;
       }
@@ -231,7 +231,7 @@ Node* redblack::remove(Node* node, Node* root, int value) {
     }
     //one child on the left
     if (root->right == nullptr) {
-      Node child = node->right;
+      Node* child = node->right;
       if (child == nullptr) {
 	child = node->left;
       }
@@ -263,35 +263,41 @@ void redblack::fixRemove(Node* &root, Node* node) {
   //when its a double black
   while(node != root && node->color == black) {
     //if its on the left of the parent its sibling is on the right
+    Node* sibling = nullptr;
+    Node* parent = node->parent;
     if (node == node->parent->left) {
       //left side case 1, sibling is red
-      Node* sibling = node->parent->right;
+      sibling = node->parent->right;
       if (sibling->color == red) {
 	sibling->color = black;
 	node->parent->color = red;
-	rotateLeft(root, node->parent);
+	rotateLeft(root);
 	sibling = node->parent->right;
       }
     }
     //if its on the right of the parent its sibling is on the left
     else {
       //right side case 1, sibling is red
-      Node* sibling = node->parent->left;
+      sibling = node->parent->left;
       if (sibling->color == red) {
 	sibling->color = black;
 	node->parent->color = red;
-	rotateRight(root, node->parent);
+	rotateRight(root);
 	sibling = node->parent->left;
       }
     }
-    //case 2, sibing is black and both of its children are black
-    if (sibling->color == black && (sibling->right == nullptr || sibling->right->color == black) (sibling->left == nullptr || sibling->left->color == black)) {
+    //case 2, sibing is black and both of its children are black 
+    if (sibling->color == black && (sibling->right == nullptr || sibling->right->color == black) && (sibling->left == nullptr || sibling->left->color == black)) {
       sibling->color = red;
       node = parent;
       parent = node->parent;
       continue;
     }
     //case 3, sibling is black, near child is red, far child is black
+    if (sibling->color == black && ((isLeftChild && sibling->right && sibling->right->color == red) || (!isLeftChild && sibling->left && sibling->left->color == red)) && ((isLeftChild && (!sibling->left || sibling->left->color == black)) || (!isLeftChild && (!sibling->right || sibling->right->color == black)))) {
+
+    }
+  }
     //case 4, sibling is black, far child is red
   }
   node->color = black;
