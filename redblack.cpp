@@ -188,7 +188,7 @@ void redblack::removeRoot(Node* node, Node* root, int value) {
 }
 
 //code for removing a number in the tree
-//help from copilot used
+//help from copilot used to make it include fixRemove
 Node* redblack::remove(Node* node, Node* root, int value) {
   //no number found
   if (root == nullptr) {
@@ -259,12 +259,14 @@ Node* redblack::remove(Node* node, Node* root, int value) {
   return root;
 }
 
+//copilot helped
 void redblack::fixRemove(Node* &root, Node* node) {
   //when its a double black
   while(node != root && node->color == black) {
     //if its on the left of the parent its sibling is on the right
     Node* sibling = nullptr;
     Node* parent = node->parent;
+    bool isLeftChild = (node == parent->left);
     if (node == node->parent->left) {
       //left side case 1, sibling is red
       sibling = node->parent->right;
@@ -295,10 +297,43 @@ void redblack::fixRemove(Node* &root, Node* node) {
     }
     //case 3, sibling is black, near child is red, far child is black
     if (sibling->color == black && ((isLeftChild && sibling->right && sibling->right->color == red) || (!isLeftChild && sibling->left && sibling->left->color == red)) && ((isLeftChild && (!sibling->left || sibling->left->color == black)) || (!isLeftChild && (!sibling->right || sibling->right->color == black)))) {
-
+      //recolor
+      if (isLeftChild) {
+	sibling->right->color = black;
+      }
+      else {
+	sibling->left->color = black;
+      }
+      sibling->color = red;
+      //rotate
+      if (isLeftChild) {
+	rotateLeft(sibling);
+      }
+      else {
+	rotateRight(sibling);
+      }
+      sibling = parent->right;
+      if (!isLeftChild) {
+	sibling = parent->left;
+      }
     }
   }
-    //case 4, sibling is black, far child is red
+  //case 4, sibling is black, far child is red. Continuation of case 3
+  if (sibling->color == black && ((isLeftChild && sibling->right && sibling->right->color == red) || (!isLeftChild && sibling->left && sibling->left->color == red))) {
+    //recolor with parent
+    sibling->color = parent->color;
+    parent->color = black;
+    //far child black
+    if (isleftChild) {
+      sibling->right->color = black;
+      rotateLeft(parent);
+    }
+    else {
+      sibling->left->color = black;
+      rotateRight(parent);
+    }
+    node = root;
+    break;
   }
   node->color = black;
 } 
