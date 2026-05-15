@@ -25,6 +25,15 @@ redblack::~redblack() {
 
 }
 
+/*//help from copilot to make a non null leaf to use instead of nullptr
+Node* fake;
+redblack::redblack() {
+  fake = new Node();
+  fake->color = black;
+  fake->left = fake->right = fake->parent = fake;
+  root = fake;
+  }*/
+
 //update root
 //help from copilot to update the inserted value from fixInsert
 void redblack::insert(int value) {
@@ -262,60 +271,43 @@ Node* redblack::remove(Node* node, Node* root, int value) {
 //copilot helped
 void redblack::fixRemove(Node* &root, Node* node) {
   //when its a double black
-  while(node != root && node->color == black) {
+  while(node != root && (node == nullptr || node->color == black)) {
     //if its on the left of the parent its sibling is on the right
-    Node* sibling = nullptr;
-    Node* parent = node->parent;
+    Node* parent = (node ? node->parent : savedParent);
     bool isLeftChild = (node == parent->left);
-    if (node == node->parent->left) {
-      //left side case 1, sibling is red
-      sibling = node->parent->right;
-      if (sibling->color == red) {
-	sibling->color = black;
-	node->parent->color = red;
-	rotateLeft(root);
-	sibling = node->parent->right;
+    Node* sibling = isLeftChild ? parent->right : parent->left;
+    //case 1, sibling is red
+    if (sibling && sibling->color == red) {
+      sibling->color = black;
+      parent->color = red;
+      if (isLeftChild) {
+        rotateLeft(parent);
       }
+      else {
+        rotateRight(parent);
+      }
+      sibling = isLeftChild ? parent->right : parent->left;
     }
-    //if its on the right of the parent its sibling is on the left
+  //case 2, sibing is black and both of its children are black 
+  if (sibling->color == black && (sibling->right == nullptr || sibling->right->color == black) && (sibling->left == nullptr || sibling->left->color == black)) {
+    sibling->color = red;
+    node = parent;
+    continue;
+  }
+  //case 3, sibling is black, near child is red, far child is black
+  if (sibling->color == black && ((isLeftChild && sibling->right && sibling->right->color == red) || (!isLeftChild && sibling->left && sibling->left->color == red)) && ((isLeftChild && (!sibling->left || sibling->left->color == black)) || (!isLeftChild && (!sibling->right || sibling->right->color == black)))) {
+    //recolor and rotate
+    if (isLeftChild) {
+      sibling->right->color = black;
+      sibling->color = red;
+      rotateLeft(sibling);
+      siblng = parent->right
+    }
     else {
-      //right side case 1, sibling is red
-      sibling = node->parent->left;
-      if (sibling->color == red) {
-	sibling->color = black;
-	node->parent->color = red;
-	rotateRight(root);
-	sibling = node->parent->left;
-      }
-    }
-    //case 2, sibing is black and both of its children are black 
-    if (sibling->color == black && (sibling->right == nullptr || sibling->right->color == black) && (sibling->left == nullptr || sibling->left->color == black)) {
+      sibling->left->color = black;
       sibling->color = red;
-      node = parent;
-      parent = node->parent;
-      continue;
-    }
-    //case 3, sibling is black, near child is red, far child is black
-    if (sibling->color == black && ((isLeftChild && sibling->right && sibling->right->color == red) || (!isLeftChild && sibling->left && sibling->left->color == red)) && ((isLeftChild && (!sibling->left || sibling->left->color == black)) || (!isLeftChild && (!sibling->right || sibling->right->color == black)))) {
-      //recolor
-      if (isLeftChild) {
-	sibling->right->color = black;
-      }
-      else {
-	sibling->left->color = black;
-      }
-      sibling->color = red;
-      //rotate
-      if (isLeftChild) {
-	rotateLeft(sibling);
-      }
-      else {
-	rotateRight(sibling);
-      }
-      sibling = parent->right;
-      if (!isLeftChild) {
-	sibling = parent->left;
-      }
+      rotateRight(sibling);
+      sibling = parent->left
     }
   }
   //case 4, sibling is black, far child is red. Continuation of case 3
@@ -324,7 +316,7 @@ void redblack::fixRemove(Node* &root, Node* node) {
     sibling->color = parent->color;
     parent->color = black;
     //far child black
-    if (isleftChild) {
+    if (isLeftChild) {
       sibling->right->color = black;
       rotateLeft(parent);
     }
@@ -335,8 +327,11 @@ void redblack::fixRemove(Node* &root, Node* node) {
     node = root;
     break;
   }
-  node->color = black;
-} 
+  if (node) {
+    node->color = black;
+  }
+  break;
+}
 
 //public tree print
 void redblack::tree() const {
