@@ -25,15 +25,6 @@ redblack::~redblack() {
 
 }
 
-/*//help from copilot to make a non null leaf to use instead of nullptr
-Node* fake;
-redblack::redblack() {
-  fake = new Node();
-  fake->color = black;
-  fake->left = fake->right = fake->parent = fake;
-  root = fake;
-  }*/
-
 //update root
 //help from copilot to update the inserted value from fixInsert
 void redblack::insert(int value) {
@@ -197,7 +188,7 @@ void redblack::removeRoot(Node* node, Node* root, int value) {
 }
 
 //code for removing a number in the tree
-//help from copilot used to make it include fixRemove
+//help from copilot used to make it include fixRemove and in fixing seg faults
 Node* redblack::remove(Node* node, Node* root, int value) {
   //no number found
   if (root == nullptr) {
@@ -232,27 +223,25 @@ Node* redblack::remove(Node* node, Node* root, int value) {
       if (parentblack && childblack) {
         fixRemove(this->root, child, parent);
       }
-      if (child) child->color = black {
-        return child;
+      if (child != nullptr){
+	child->color = black;
       }
+      return child;
     }
     //one child on the left
     if (root->right == nullptr) {
       Node* child = node->right;
-      if (child == nullptr) {
-	child = node->left;
-      }
-      Node* temp = root->left;
+      Node* parent = root->parent;
       bool parentblack = (root->color == black);
       bool childblack = (child->color == black);
       delete root;
       if (parentblack && childblack) {
-	fixRemove(this->root, temp);
+	fixRemove(this->root, child, parent);
       }
       if (child != nullptr) {
         child->color = black;
       }
-      return temp;
+      return child;
     }
     //two children. Has to find a node to inherit its spot
     Node* inherit = root->right;
@@ -267,14 +256,13 @@ Node* redblack::remove(Node* node, Node* root, int value) {
 }
 
 //copilot helped
-void redblack::fixRemove(Node* &root, Node* node) {
+void redblack::fixRemove(Node* &root, Node* node, Node* parent) {
   //when its a double black
   while(node != root && (node == nullptr || node->color == black)) {
     //if its on the left of the parent its sibling is on the right
-    Node* parent = (node ? node->parent : nullptr);
-    cout << parent << endl;
-    bool isLeftChild = (node == parent->left);
-    Node* sibling = isLeftChild ? parent->right : parent->left;
+    Node* parent = parent;
+    bool isLeftChild = (parent && node == parent->left);
+    Node* sibling = (parent ? (isLeftChild ? parent->right : parent->left) : nullptr);
     //case 1, sibling is red
     if (sibling && sibling->color == red) {
       sibling->color = black;
@@ -292,6 +280,7 @@ void redblack::fixRemove(Node* &root, Node* node) {
     (sibling->right == nullptr || sibling->right->color == black) && (sibling->left  == nullptr || sibling->left->color  == black)) {
       sibling->color = red;
       node = parent;
+      parent = parent->parent;
       continue;
     }
     //case 3, sibling is black, near child is red, far child is black
